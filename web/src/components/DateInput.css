@@ -1,0 +1,9 @@
+.date-input { position: relative; }
+.date-btn { text-align: right; cursor: pointer; }
+.date-pop { position: absolute; top: calc(100% + 4px); right: 0; z-index: 60; padding: 10px; width: 260px; display: flex; flex-direction: column; gap: 8px; }
+.date-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+.date-grid .day { border: none; background: none; border-radius: 6px; padding: 4px 0; cursor: pointer; }
+.date-grid .day:hover { background: var(--surface-2); }
+.date-grid .day.holiday { color: var(--holiday); }
+.date-grid .day.today { outline: 1px solid var(--primary); }
+.date-grid .day.sel { background: var(--primary); color: #fff; }

@@ -1,0 +1,18 @@
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); overflow: hidden; }
+.cal-wd { padding: 8px; text-align: center; font-size: 0.85rem; color: var(--muted); border-bottom: 1px solid var(--border); }
+.cal-wd.off { color: var(--holiday); }
+.cal-cell { cursor: pointer; min-height: 110px; border-bottom: 1px solid var(--border); border-inline-start: 1px solid var(--border); padding: 4px 6px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cal-cell.empty-cell { background: var(--surface-2); }
+.cal-cell.today { background: var(--primary-soft); }
+.cal-num { font-weight: 500; }
+.cal-num.off { color: var(--holiday); }
+.cal-add { opacity: 0; }
+.cal-cell:hover .cal-add { opacity: 1; }
+.cal-holiday { font-size: 0.7rem; color: var(--holiday); }
+.cal-task { font-size: 0.78rem; background: var(--surface-2); border-inline-start: 3px solid; border-radius: 4px; padding: 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.cal-task.done { text-decoration: line-through; opacity: 0.55; }
+@media (max-width: 700px) {
+  .cal-cell { min-height: 70px; padding: 2px; }
+  .cal-wd { font-size: 0.7rem; padding: 4px 0; }
+  .cal-add { display: none; }
+}

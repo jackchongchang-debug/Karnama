@@ -1,0 +1,18 @@
+.gantt { display: flex; overflow: hidden; }
+.gantt-names { width: 200px; flex: none; border-inline-end: 1px solid var(--border); }
+.gantt-corner { height: 56px; display: flex; align-items: flex-end; padding: 6px 10px; color: var(--muted); font-size: 0.85rem; border-bottom: 1px solid var(--border); }
+.gantt-name { height: 36px; line-height: 36px; padding: 0 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; border-bottom: 1px solid var(--border); }
+.gantt-name:hover { background: var(--surface-2); }
+.gantt-scroll { overflow-x: auto; flex: 1; }
+.gantt-months { display: flex; height: 28px; border-bottom: 1px solid var(--border); }
+.gantt-months > div { border-inline-start: 1px solid var(--border); padding: 4px 8px; font-size: 0.85rem; white-space: nowrap; overflow: hidden; }
+.gantt-days { display: flex; height: 28px; border-bottom: 1px solid var(--border); }
+.gantt-days > div { width: 30px; flex: none; text-align: center; font-size: 0.75rem; line-height: 28px; color: var(--muted); }
+.gantt-days > .off { color: var(--holiday); }
+.gantt-days > .today { background: var(--primary); color: #fff; border-radius: 4px; }
+.gantt-body { position: relative; background-image: linear-gradient(to left, var(--border) 1px, transparent 1px); }
+.gantt-row { height: 36px; position: relative; border-bottom: 1px solid var(--border); }
+.gantt-bar { position: absolute; top: 6px; height: 24px; border-radius: 6px; color: #fff; font-size: 0.78rem; line-height: 24px; padding: 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.gantt-bar.done { opacity: 0.45; }
+.gantt-today { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--danger); opacity: 0.6; z-index: 1; }
+@media (max-width: 600px) { .gantt-names { width: 120px; } }

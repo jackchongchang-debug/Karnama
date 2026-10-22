@@ -1,0 +1,9 @@
+.modal-scrim {
+  position: fixed; inset: 0; background: rgb(0 0 0 / 40%); z-index: 50;
+  display: flex; align-items: flex-start; justify-content: center; padding: 5vh 12px; overflow: auto;
+}
+.modal { width: 100%; max-width: 520px; display: flex; flex-direction: column; }
+.modal.wide { max-width: 760px; }
+.modal-head { display: flex; align-items: center; gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.modal-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.modal-foot { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-start; }

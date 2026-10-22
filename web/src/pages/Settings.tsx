@@ -2,11 +2,10 @@ import { useRef, useState } from 'react'
 import { useHolidays, useLabels } from '../lib/hooks'
 import { create, remove, update } from '../lib/db'
 import { download, exportBackup, importBackup, importCSV, importTrello } from '../lib/importers'
-import { login, logout, syncNow, useSyncState } from '../lib/sync'
+import { connect, DEFAULT_CLIENT_ID, disconnect, getConfig, reconnect, syncNow, useSyncState } from '../lib/sync'
 import { faNum, fmt, fmtDateTime, todayISO } from '../lib/date'
 import DateInput from '../components/DateInput'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { getConfig } from '../lib/sync'
 
 export default function Settings() {
   return (
@@ -32,53 +31,54 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function SyncSection() {
   const s = useSyncState()
-  const cfg = useLiveQuery(getConfig, [s.configured, s.lastSync])
-  const [url, setUrl] = useState(location.origin)
-  const [password, setPassword] = useState('')
-  const [device, setDevice] = useState(/Mobi/.test(navigator.userAgent) ? 'گوشی' : 'کامپیوتر')
+  const cfg = useLiveQuery(getConfig, [s.configured, s.lastSync, s.status])
+  const [clientId, setClientId] = useState(DEFAULT_CLIENT_ID)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
+  const run = async (fn: () => Promise<void>) => {
+    setBusy(true)
+    setErr('')
+    try {
+      await fn()
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e))
+    } finally {
+      setBusy(false)
+    }
+  }
 
-  if (cfg)
+  if (cfg?.enabled)
     return (
-      <Section title="همگام‌سازی بین دستگاه‌ها">
-        <div>متصل به <span dir="ltr">{cfg.url}</span></div>
+      <Section title="همگام‌سازی با گوگل‌درایو">
+        <div>متصل به حساب <span dir="ltr">{cfg.email ?? 'گوگل'}</span></div>
         <div className="small muted">
-          {s.status === 'error' ? <span style={{ color: 'var(--danger)' }}>{s.error}</span> : s.lastSync ? `آخرین همگام‌سازی: ${fmtDateTime(new Date(s.lastSync).toISOString())}` : ''}
+          {s.status === 'error' ? <span style={{ color: 'var(--danger)' }}>{s.error}</span>
+            : s.status === 'signin' ? <span style={{ color: 'var(--warning)' }}>ورود به گوگل منقضی شده؛ برای ادامه‌ی همگام‌سازی دوباره وارد شوید.</span>
+            : s.lastSync ? `آخرین همگام‌سازی: ${fmtDateTime(new Date(s.lastSync).toISOString())}` : ''}
         </div>
-        <div className="row">
-          <button className="btn primary" onClick={() => syncNow()} disabled={s.status === 'syncing'}>همگام‌سازی الان</button>
-          <button className="btn" onClick={logout}>قطع اتصال این دستگاه</button>
+        {err && <div style={{ color: 'var(--danger)' }}>{err}</div>}
+        <div className="row wrap">
+          {s.status === 'signin'
+            ? <button className="btn primary" disabled={busy} onClick={() => run(reconnect)}>ورود دوباره</button>
+            : <button className="btn primary" disabled={busy || s.status === 'syncing'} onClick={() => run(syncNow)}>همگام‌سازی الان</button>}
+          <button className="btn" onClick={disconnect}>قطع اتصال این دستگاه</button>
         </div>
       </Section>
     )
 
   return (
-    <Section title="همگام‌سازی بین دستگاه‌ها">
-      <div className="small muted">با وارد کردن آدرس سرور و رمز عبور، اطلاعات این دستگاه با بقیه‌ی دستگاه‌هایتان یکی می‌شود. بدون اتصال هم برنامه کامل کار می‌کند.</div>
-      <form
-        className="col"
-        onSubmit={async (e) => {
-          e.preventDefault()
-          setBusy(true)
-          setErr('')
-          try {
-            await login(url, password, device)
-          } catch (e) {
-            setErr(e instanceof Error ? e.message : String(e))
-          } finally {
-            setBusy(false)
-          }
-        }}
-      >
-        <div className="grid2">
-          <label className="field"><span>آدرس سرور</span><input className="input" dir="ltr" value={url} onChange={(e) => setUrl(e.target.value)} /></label>
-          <label className="field"><span>نام این دستگاه</span><input className="input" value={device} onChange={(e) => setDevice(e.target.value)} /></label>
-          <label className="field"><span>رمز عبور</span><input className="input" type="password" dir="ltr" value={password} onChange={(e) => setPassword(e.target.value)} /></label>
-        </div>
-        {err && <div style={{ color: 'var(--danger)' }}>{err}</div>}
-        <div><button className="btn primary" disabled={busy || !password}>اتصال</button></div>
-      </form>
+    <Section title="همگام‌سازی با گوگل‌درایو">
+      <div className="small muted">
+        اطلاعات در یک پوشه‌ی مخفی مخصوص همین برنامه در گوگل‌درایو خودتان ذخیره می‌شود (به بقیه‌ی فایل‌های درایو دسترسی ندارد). روی هر دستگاه با همان حساب گوگل وارد شوید تا اطلاعات یکی شود. بدون اتصال هم برنامه کامل کار می‌کند.
+      </div>
+      {!DEFAULT_CLIENT_ID && (
+        <label className="field">
+          <span>شناسه‌ی کلاینت گوگل (Client ID)</span>
+          <input className="input" dir="ltr" placeholder="xxxx.apps.googleusercontent.com" value={clientId} onChange={(e) => setClientId(e.target.value)} />
+        </label>
+      )}
+      {err && <div style={{ color: 'var(--danger)' }}>{err}</div>}
+      <div><button className="btn primary" disabled={busy || !clientId.trim()} onClick={() => run(() => connect(clientId))}>اتصال به گوگل‌درایو</button></div>
     </Section>
   )
 }

@@ -34,7 +34,7 @@ async function check() {
     // Skip reminders that went off more than a day ago (e.g. app was closed).
     if (Date.now() - new Date(t.reminderAt!).getTime() > 86400000) continue
     if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('یادآور کارنما', { body: t.title, icon: '/favicon.svg', lang: 'fa', dir: 'rtl' })
+      new Notification('یادآور کارنما', { body: t.title, icon: `${import.meta.env.BASE_URL}favicon.svg`, lang: 'fa', dir: 'rtl' })
     }
     toast(`🔔 ${t.title}`)
   }

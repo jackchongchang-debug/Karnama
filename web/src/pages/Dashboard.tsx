@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useCustomerRecords, useProjects, useTasks } from '../lib/hooks'
-import { addDaysISO, faMoney, faNum, fmt, toISO, todayISO } from '../lib/date'
+import { useProjects, useTasks } from '../lib/hooks'
+import { addDaysISO, faNum, fmt, toISO, todayISO } from '../lib/date'
 import { completeTask, groupTasks, progress, reopenTask } from '../lib/tasks'
-import { forecast } from '../lib/crm'
 import TaskCard from '../components/TaskCard'
 import TaskDialog from '../components/TaskDialog'
 import type { Task } from '../lib/db'
@@ -11,7 +10,6 @@ import type { Task } from '../lib/db'
 export default function Dashboard() {
   const projects = useProjects().filter((p) => !p.archived)
   const tasks = useTasks().filter((t) => projects.some((p) => p.id === t.projectId))
-  const { finances, leads } = useCustomerRecords()
   const [openTask, setOpenTask] = useState<string>()
   const today = todayISO()
 
@@ -24,7 +22,6 @@ export default function Dashboard() {
   const days = Array.from({ length: 14 }, (_, i) => addDaysISO(today, i - 13))
   const perDay = days.map((d) => tasks.filter((t) => doneDay(t) === d).length)
   const maxDay = Math.max(1, ...perDay)
-  const nextMonths = forecast(finances, leads, 3)
   const toggle = (t: Task) => {
     const p = projects.find((x) => x.id === t.projectId)
     if (p) return t.done ? reopenTask(t, p) : completeTask(t, p)
@@ -81,14 +78,6 @@ export default function Dashboard() {
           {projects.length === 0 && <div className="muted">پروژه‌ای نیست. <Link to="/projects">بسازید</Link></div>}
         </section>
 
-        <section className="card dash-card">
-          <h3>درآمد پیش‌بینی‌شده</h3>
-          {nextMonths.map((m) => (
-            <div key={m.label} className="row small"><span className="grow">{m.label}</span><strong>{faMoney(m.invoices + m.leads)}</strong></div>
-          ))}
-          <div className="small muted">فرصت‌های فروش باز: {faNum(leads.filter((l) => !['won', 'lost'].includes(l.stage)).length)}</div>
-          <Link to="/customers" className="small">مدیریت مشتریان ←</Link>
-        </section>
       </div>
       {openTask && <TaskDialog taskId={openTask} onClose={() => setOpenTask(undefined)} />}
     </div>

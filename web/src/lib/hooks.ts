@@ -32,22 +32,6 @@ export function useNotes() {
   return useLiveQuery(async () => alive(await db.notes.toArray()).sort((a, b) => b.updatedAt - a.updatedAt), []) ?? []
 }
 
-export function useCustomers() {
-  return useLiveQuery(async () => alive(await db.customers.toArray()).sort((a, b) => a.name.localeCompare(b.name, 'fa')), []) ?? []
-}
-
-export function useCustomerRecords(customerId?: string) {
-  return useLiveQuery(async () => {
-    const q = <T extends { deleted: 0 | 1; customerId: string }>(rows: T[]) =>
-      alive(rows).filter((r) => !customerId || r.customerId === customerId)
-    return {
-      contacts: q(await db.contacts.toArray()),
-      finances: q(await db.finances.toArray()),
-      leads: q(await db.leads.toArray()),
-    }
-  }, [customerId]) ?? { contacts: [], finances: [], leads: [] }
-}
-
 export function useTemplates() {
   return useLiveQuery(async () => alive(await db.templates.toArray()), []) ?? []
 }

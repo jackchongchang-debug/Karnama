@@ -35,3 +35,9 @@ export function useNotes() {
 export function useTemplates() {
   return useLiveQuery(async () => alive(await db.templates.toArray()), []) ?? []
 }
+
+export function useJournal() {
+  return (
+    useLiveQuery(async () => alive(await db.journal.toArray()).sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt), []) ?? []
+  )
+}

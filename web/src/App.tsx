@@ -5,6 +5,7 @@ import Projects from './pages/Projects'
 import ProjectView from './pages/ProjectView'
 import CalendarPage from './pages/CalendarPage'
 import Notes from './pages/Notes'
+import Journal from './pages/Journal'
 import Templates from './pages/Templates'
 import Settings from './pages/Settings'
 import MyTasks from './pages/MyTasks'
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="projects/:id" element={<ProjectView />} />
         <Route path="calendar" element={<CalendarPage />} />
         <Route path="notes" element={<Notes />} />
+        <Route path="journal" element={<Journal />} />
         <Route path="templates" element={<Templates />} />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />

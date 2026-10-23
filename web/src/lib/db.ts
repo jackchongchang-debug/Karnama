@@ -51,7 +51,6 @@ export interface Task extends Base {
   labels: string[]
   checklist: ChecklistItem[]
   recurrence?: Recurrence
-  customerId?: string
 }
 
 export interface Note extends Base {
@@ -59,47 +58,6 @@ export interface Note extends Base {
   body: string
   color: string
   pinned: boolean
-}
-
-export interface Customer extends Base {
-  name: string
-  company: string
-  phone: string
-  email: string
-  address: string
-  notes: string
-  tags: string[]
-}
-
-export type ContactKind = 'call' | 'meeting' | 'email' | 'message' | 'other'
-
-export interface ContactReport extends Base {
-  customerId: string
-  date: string
-  kind: ContactKind
-  summary: string
-}
-
-export type FinanceKind = 'invoice' | 'payment' | 'expense'
-
-export interface FinanceDoc extends Base {
-  customerId: string
-  date: string
-  kind: FinanceKind
-  title: string
-  amount: number
-  paid: boolean
-}
-
-export type LeadStage = 'new' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost'
-
-export interface Lead extends Base {
-  customerId: string
-  title: string
-  amount: number
-  probability: number
-  stage: LeadStage
-  expectedDate?: string
 }
 
 export interface TemplateStep {
@@ -137,10 +95,6 @@ class AppDB extends Dexie {
   projects!: Table<Project, string>
   tasks!: Table<Task, string>
   notes!: Table<Note, string>
-  customers!: Table<Customer, string>
-  contacts!: Table<ContactReport, string>
-  finances!: Table<FinanceDoc, string>
-  leads!: Table<Lead, string>
   templates!: Table<Template, string>
   labels!: Table<Label, string>
   holidays!: Table<Holiday, string>
@@ -161,6 +115,14 @@ class AppDB extends Dexie {
       holidays: 'id, updatedAt, deleted, date',
       meta: 'key',
     })
+    // v2: the customer-management section was removed; drop its tables.
+    this.version(2).stores({
+      tasks: 'id, updatedAt, deleted, projectId, dueDate, startDate',
+      customers: null,
+      contacts: null,
+      finances: null,
+      leads: null,
+    })
   }
 }
 
@@ -170,10 +132,6 @@ export const SYNCED_TABLES = [
   'projects',
   'tasks',
   'notes',
-  'customers',
-  'contacts',
-  'finances',
-  'leads',
   'templates',
   'labels',
   'holidays',

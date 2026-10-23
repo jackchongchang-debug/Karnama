@@ -42,10 +42,6 @@ export function faNum(v: string | number): string {
   return String(v).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)])
 }
 
-export function faMoney(n: number): string {
-  return faNum(Math.round(n).toLocaleString('en-US')).replace(/,/g, '٬')
-}
-
 export function fmt(iso: string | undefined, pattern = 'd MMMM yyyy'): string {
   if (!iso) return ''
   return faNum(format(fromISO(iso), pattern, { locale: faIR }))
@@ -128,12 +124,3 @@ export const FREQ_LABEL: Record<Recurrence['freq'], string> = {
   yearly: 'سال',
 }
 
-/** The current Jalali month and the ones after it, as Gregorian ISO ranges. */
-export function addMonthsJalali(count: number) {
-  const now = jParts(new Date())
-  return Array.from({ length: count }, (_, i) => {
-    const { y, m } = shiftMonth(now.y, now.m, i)
-    const first = jDate(y, m, 1)
-    return { label: `${MONTHS[m]} ${faNum(y)}`, from: toISO(first), to: toISO(endOfMonth(first)) }
-  })
-}

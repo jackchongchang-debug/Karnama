@@ -10,7 +10,6 @@ const NAV = [
   { to: '/projects', label: 'پروژه‌ها', icon: '▤' },
   { to: '/calendar', label: 'تقویم', icon: '◫' },
   { to: '/notes', label: 'یادداشت‌ها', icon: '✎' },
-  { to: '/customers', label: 'مشتریان', icon: '☺' },
   { to: '/templates', label: 'قالب‌ها', icon: '⧉' },
   { to: '/settings', label: 'تنظیمات', icon: '⚙' },
 ]

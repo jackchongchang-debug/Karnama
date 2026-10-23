@@ -5,13 +5,12 @@ import DateInput from './DateInput'
 import LabelPicker from './LabelPicker'
 import { db, remove, uid, update, type Frequency, type Task } from '../lib/db'
 import { completeTask, duplicateTask, reopenTask } from '../lib/tasks'
-import { useCustomers, useProjects } from '../lib/hooks'
+import { useProjects } from '../lib/hooks'
 import { FREQ_LABEL, faNum, fmtDateTime, toISO } from '../lib/date'
 
 export default function TaskDialog({ taskId, onClose }: { taskId: string; onClose: () => void }) {
   const task = useLiveQuery(() => db.tasks.get(taskId), [taskId])
   const projects = useProjects()
-  const customers = useCustomers()
   const [newItem, setNewItem] = useState('')
 
   if (!task) return null
@@ -110,13 +109,6 @@ export default function TaskDialog({ taskId, onClose }: { taskId: string; onClos
           </div>
           {task.recurrence && !(task.dueDate || task.startDate) && <span className="small" style={{ color: 'var(--warning)' }}>برای تکرار، ددلاین یا تاریخ شروع لازم است.</span>}
         </div>
-        <label className="field">
-          <span>مشتری</span>
-          <select className="input" value={task.customerId ?? ''} onChange={(e) => set({ customerId: e.target.value || undefined })}>
-            <option value="">—</option>
-            {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
-        </label>
       </div>
 
       <div className="field">

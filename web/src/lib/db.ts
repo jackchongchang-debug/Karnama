@@ -81,6 +81,13 @@ export interface Label extends Base {
   color: string
 }
 
+export interface JournalEntry extends Base {
+  date: string // ISO yyyy-MM-dd (Gregorian); the Jalali date is derived for display
+  title: string
+  body: string
+  tags: string[]
+}
+
 export interface Holiday extends Base {
   date: string
   title: string
@@ -98,6 +105,7 @@ class AppDB extends Dexie {
   templates!: Table<Template, string>
   labels!: Table<Label, string>
   holidays!: Table<Holiday, string>
+  journal!: Table<JournalEntry, string>
   meta!: Table<Meta, string>
 
   constructor() {
@@ -123,6 +131,10 @@ class AppDB extends Dexie {
       finances: null,
       leads: null,
     })
+    // v3: daily journal of events.
+    this.version(3).stores({
+      journal: 'id, updatedAt, deleted, date',
+    })
   }
 }
 
@@ -135,6 +147,7 @@ export const SYNCED_TABLES = [
   'templates',
   'labels',
   'holidays',
+  'journal',
 ] as const
 
 export type SyncedTable = (typeof SYNCED_TABLES)[number]
